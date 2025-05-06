@@ -1,0 +1,42 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class OracleJDBC {
+    public static void main(String[] args) {
+        // Your JDBC connection string
+        String jdbcUrl = "jdbc:oracle:thin:@//localhost:1521/XEPDB1"; // Example JDBC URL
+        String username = "your_username";
+        String password = "your_password";
+
+        try {
+            Connection connection = DriverManager.getConnection(jdbcUrl, username, password);
+            System.out.println("Connected to Oracle database!");
+        } catch (SQLException e) {
+            System.err.println("Connection failed: " + e.getMessage());
+        }
+    }
+}
+
+javac OracleJDBC.java
+
+java -cp .:ojdbc8.jar OracleJDBC
+
+
+import { exec } from 'child_process';
+
+async function runJava() {
+    exec('java -cp .:ojdbc8.jar OracleJDBC', (error, stdout, stderr) => {
+        if (error) {
+            console.error(`exec error: ${error}`);
+            return;
+        }
+        if (stderr) {
+            console.error(`stderr: ${stderr}`);
+            return;
+        }
+        console.log(`stdout: ${stdout}`);
+    });
+}
+
+runJava();

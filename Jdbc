@@ -1,3 +1,16 @@
+const lines = stdout.trim().split('\n');
+      const jsonLine = lines.find(line => line.startsWith('RESULT_JSON:'));
+      if (!jsonLine) return reject(new Error('No JSON result found from DB'));
+
+      const jsonString = jsonLine.replace('RESULT_JSON:', '').trim();
+      try {
+        const result = JSON.parse(jsonString);
+        resolve(result);
+      } 
+
+
+
+
 Create this helper function in a utilities file (or directly in your test file):
 
 function parseDbOutputToJson(output: string): Record<string, string> {

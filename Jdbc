@@ -1,3 +1,27 @@
+export function compareValuesOnly(dbJson: Record<string, string>, uiValues: string[]): boolean {
+  const dbValues = Object.values(dbJson).map(v => v.trim());
+  const uiTrimmed = uiValues.map(v => v.trim());
+
+  if (dbValues.length !== uiTrimmed.length) {
+    console.error(`❌ Length mismatch: DB (${dbValues.length}) vs UI (${uiTrimmed.length})`);
+    return false;
+  }
+
+  for (let i = 0; i < dbValues.length; i++) {
+    if (dbValues[i] !== uiTrimmed[i]) {
+      console.error(`❌ Mismatch at index ${i}: DB = "${dbValues[i]}", UI = "${uiTrimmed[i]}"`);
+      return false;
+    }
+  }
+
+  console.log("✅ All DB values match UI values.");
+  return true;
+}
+
+
+
+
+
 const lines = stdout.trim().split('\n');
       const jsonLine = lines.find(line => line.startsWith('RESULT_JSON:'));
       if (!jsonLine) return reject(new Error('No JSON result found from DB'));

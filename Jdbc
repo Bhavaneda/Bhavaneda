@@ -1,22 +1,43 @@
-export function compareValuesOnly(dbJson: Record<string, string>, uiValues: string[]): boolean {
+export function compareValuesOnly(dbJson: Record<string, string>, uiJson: Record<string, string>): void {
   const dbValues = Object.values(dbJson).map(v => v.trim());
-  const uiTrimmed = uiValues.map(v => v.trim());
+  const uiValues = Object.values(uiJson).map(v => v.trim());
 
-  if (dbValues.length !== uiTrimmed.length) {
-    console.error(`❌ Length mismatch: DB (${dbValues.length}) vs UI (${uiTrimmed.length})`);
-    return false;
-  }
+  const matched: string[] = [];
+  const mismatched: { db: string, ui: string }[] = [];
 
-  for (let i = 0; i < dbValues.length; i++) {
-    if (dbValues[i] !== uiTrimmed[i]) {
-      console.error(`❌ Mismatch at index ${i}: DB = "${dbValues[i]}", UI = "${uiTrimmed[i]}"`);
-      return false;
+  const maxLength = Math.max(dbValues.length, uiValues.length);
+
+  for (let i = 0; i < maxLength; i++) {
+    const dbVal = dbValues[i];
+    const uiVal = uiValues[i];
+
+    if (dbVal === undefined) {
+      console.log(`❌ Extra UI value not in DB: '${uiVal}'`);
+      continue;
+    }
+
+    if (uiVal === undefined) {
+      console.log(`❌ DB value has no matching UI value: '${dbVal}'`);
+      continue;
+    }
+
+    if (dbVal === uiVal) {
+      matched.push(dbVal);
+    } else {
+      mismatched.push({ db: dbVal, ui: uiVal });
     }
   }
 
-  console.log("✅ All DB values match UI values.");
-  return true;
+  // Print summary
+  console.log("✅ Matched values:");
+  matched.forEach(val => console.log(`  - '${val}'`));
+
+  if (mismatched.length > 0) {
+    console.log("\n❌ Mismatched values:");
+    mismatched.forEach(pair => console.log(`  DB: '${pair.db}' | UI: '${pair.ui}'`));
+  }
 }
+
 
 
 

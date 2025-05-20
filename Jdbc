@@ -1,3 +1,23 @@
+Create this helper function in a utilities file (or directly in your test file):
+
+function parseDbOutputToJson(output: string): Record<string, string> {
+const result: Record<string, string> = {};
+const lines = output.trim().split('\n');
+
+for (const line of lines) {
+const [key, value] = line.split('=');
+if (key && value !== undefined) {
+result[key.trim()] = value.trim();
+}
+}
+
+return result;
+}
+
+
+
+
+
 if (rs.next()) {
                 ResultSetMetaData metaData = rs.getMetaData();
                 int columnCount = metaData.getColumnCount();

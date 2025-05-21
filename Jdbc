@@ -1,3 +1,44 @@
+export function compareMappedValues(
+  dbJson: Record<string, string>,
+  uiJson: Record<string, string>,
+  fieldMap: Record<string, string> // e.g., { uiKey: dbKey }
+): void {
+  const matched: string[] = [];
+  const mismatched: { uiKey: string; dbValue: string; uiValue: string }[] = [];
+
+  for (const [uiKey, dbKey] of Object.entries(fieldMap)) {
+    const dbVal = dbJson[dbKey]?.trim();
+    const uiVal = uiJson[uiKey]?.trim();
+
+    if (dbVal === undefined || uiVal === undefined) {
+      console.log(`⚠️ Missing value for '${uiKey}' or '${dbKey}'`);
+      continue;
+    }
+
+    if (dbVal === uiVal) {
+      matched.push(uiKey);
+    } else {
+      mismatched.push({ uiKey, dbValue: dbVal, uiValue: uiVal });
+    }
+  }
+
+  console.log("\n✅ Matched Fields:");
+  matched.forEach(f => console.log(`  - ${f}`));
+
+  if (mismatched.length > 0) {
+    console.log("\n❌ Mismatched Fields:");
+    mismatched.forEach(m =>
+      console.log(`  ${m.uiKey} → DB: '${m.dbValue}' | UI: '${m.uiValue}'`)
+    );
+  }
+}
+
+
+
+
+
+
+
 export function compareValuesOnly(dbJson: Record<string, string>, uiJson: Record<string, string>): void {
   const dbValues = Object.values(dbJson).map(v => v.trim());
   const uiValues = Object.values(uiJson).map(v => v.trim());

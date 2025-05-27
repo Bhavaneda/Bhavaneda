@@ -1,3 +1,270 @@
+import com.microsoft.playwright.*;
+import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+
+public class Sidebar {
+  private final Page page;
+  private final Locator searchDropDown;
+  private final Locator searchByWellsLoanNumber;
+  private final Locator txtWFLoanNum;
+  private final Locator dropdownClientNum;
+  private final Locator clientNum;  // assuming this is a container for the dropdown items
+  private final Locator btnSearch;
+
+  // Constructor with locator initializations
+  public Sidebar(Page page) {
+    this.page = page;
+    this.searchDropDown = page.locator("your-selector-for-searchDropDown");
+    this.searchByWellsLoanNumber = page.locator("your-selector-for-searchByWellsLoanNumber");
+    this.txtWFLoanNum = page.locator("your-selector-for-txtWFLoanNum");
+    this.dropdownClientNum = page.locator("your-selector-for-dropdownClientNum");
+    this.clientNum = page.locator("your-selector-for-clientNum"); // container for dynamic option
+    this.btnSearch = page.locator("your-selector-for-btnSearch");
+  }
+
+  public void searchByWellsLoanNumber(String wfLoanNo, String clienNum) {
+    searchDropDown.click();
+    searchByWellsLoanNumber.click();
+    assertThat(searchDropDown).hasText(" Wells Fargo Loan Number ");
+    
+    assertThat(txtWFLoanNum).isVisible();
+    txtWFLoanNum.click();
+    txtWFLoanNum.fill(wfLoanNo);
+
+    assertThat(dropdownClientNum).isVisible();
+    dropdownClientNum.click();
+
+    Locator option = clientNum.locator(String.format("//span[normalize-space(text())='%s']", clienNum));
+    assertThat(option).isVisible();
+    option.click();
+
+    btnSearch.click();
+  }
+}
+
+
+
+
+import com.microsoft.playwright.*;
+import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+
+public class Sidebar {
+  private final Page page;
+
+  private final Locator unassignedWorklist;
+  private final Locator arrowButton;
+  private final Locator searchContainer;
+  private final Locator searchDropDown;
+  private final Locator searchList;
+  private final Locator btnSearch;
+  private final Locator linkAdvancedSearch;
+
+  public Sidebar(Page page) {
+    this.page = page;
+
+    this.unassignedWorklist = page.locator("your-selector-for-unassignedWorklist");
+    this.arrowButton = page.locator("your-selector-for-arrowButton");
+    this.searchContainer = page.locator("your-selector-for-searchContainer");
+    this.searchDropDown = page.locator("your-selector-for-searchDropDown");
+    this.searchList = page.locator("your-selector-for-searchList");
+    this.btnSearch = page.locator("your-selector-for-btnSearch");
+    this.linkAdvancedSearch = page.locator("your-selector-for-linkAdvancedSearch");
+  }
+
+  public void verifyWorkListDropDown(boolean isVisible) {
+    if (!isVisible) {
+      assertThat(unassignedWorklist).isHidden();
+    }
+  }
+
+  public boolean isRightArrowVisible() {
+    return arrowButton.isVisible();
+  }
+
+  public void clickArrowButton() {
+    arrowButton.click();
+  }
+
+  public void verifySearchContainer() {
+    page.waitForTimeout(10000);
+    assertThat(searchContainer).isVisible();
+    assertThat(searchContainer.locator("b:has-text('Search')")).isVisible();
+    assertThat(searchContainer.locator("b:has-text('Search Type:')")).isVisible();
+
+    assertThat(searchDropDown).isVisible();
+    assertThat(searchDropDown).not().hasText(" Wells Fargo Loan Number ");  // optional check
+    assertThat(searchList).isVisible();
+    assertThat(btnSearch).isVisible();
+    btnSearch.click();
+
+    assertThat(linkAdvancedSearch).isVisible();
+    linkAdvancedSearch.click();
+  }
+}
+
+
+
+
+import com.microsoft.playwright.*;
+
+import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+
+public class Sidebar {
+  private final Page page;
+
+  private final Locator searchDropDown;
+  private final Locator searchByCustName;
+  private final Locator searchByUniversalLoanID;
+  private final Locator txtFirstName;
+  private final Locator txtLastName;
+  private final Locator txtUniversalLoanID;
+  private final Locator btnSearch;
+
+  public Sidebar(Page page) {
+    this.page = page;
+
+    this.searchDropDown = page.locator("your-selector-for-searchDropDown");
+    this.searchByCustName = page.locator("your-selector-for-searchByCustName");
+    this.searchByUniversalLoanID = page.locator("your-selector-for-searchByUniversalLoanID");
+    this.txtFirstName = page.locator("your-selector-for-txtFirstName");
+    this.txtLastName = page.locator("your-selector-for-txtLastName");
+    this.txtUniversalLoanID = page.locator("your-selector-for-txtUniversalLoanID");
+    this.btnSearch = page.locator("your-selector-for-btnSearch");
+  }
+
+  public void srhByClientName(String firstName, String lastName) {
+    searchDropDown.click();
+    searchByCustName.click();
+
+    assertThat(searchDropDown).hasText(" Customer Name ");
+
+    assertThat(txtFirstName).isVisible();
+    txtFirstName.click();
+    txtFirstName.fill(firstName);
+
+    assertThat(txtLastName).isVisible();
+    txtLastName.click();
+    txtLastName.fill(lastName);
+
+    btnSearch.click();
+  }
+
+  public void srhByUniversalLoanID(String ulid) {
+    searchDropDown.click();
+    searchByUniversalLoanID.click();
+
+    assertThat(searchDropDown).hasText(" Universal Loan ID ");
+
+    assertThat(txtUniversalLoanID).isVisible();
+    txtUniversalLoanID.click();
+    txtUniversalLoanID.fill(ulid);
+
+    btnSearch.click();
+  }
+}
+
+
+
+public void checkWorkList() {
+  unassignedWorklist.click();
+  page.waitForTimeout(1000);
+
+  sidebar.click();
+  personalWorklist.click();
+  page.waitForTimeout(1000);
+
+  // Optionally, you can replace the above clicks with:
+  // page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("Unassigned")).click();
+  // page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("Personal")).click();
+}
+
+
+
+public void verifyWorkListDropDown(boolean isVisible) {
+  assertThat(worklist).isVisible();
+
+  if (isVisible) {
+    assertThat(personalWorklist).isVisible();
+    assertThat(unassignedWorklist).isVisible();
+  } else {
+    assertThat(personalWorklist).isHidden();
+    assertThat(unassignedWorklist).isHidden();
+  }
+}
+
+
+
+
+
+import com.microsoft.playwright.*;
+import org.junit.jupiter.api.*;
+import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+
+import java.nio.file.Paths;
+import java.util.Map;
+
+public class SidebarFunctionalityTest {
+  private static Playwright playwright;
+  private static Browser browser;
+  private BrowserContext context;
+  private Page page;
+
+  @BeforeAll
+  static void setup() {
+    playwright = Playwright.create();
+    browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false));
+  }
+
+  @BeforeEach
+  void createContext() {
+    context = browser.newContext();
+    page = context.newPage();
+  }
+
+  @AfterEach
+  void closeContext() {
+    context.close();
+  }
+
+  @AfterAll
+  static void teardown() {
+    browser.close();
+    playwright.close();
+  }
+
+  @Test
+  void sidebarFunctionality() throws Exception {
+    // Load environment variables (use dotenv-java or manual loading)
+    Map<String, String> env = System.getenv();
+    String username = env.get("SU_TEST_USERNAME");
+    String encryptedPassword = env.get("SU_TEST_PASSWORD");
+
+    // Decrypt password (replace with your decryption logic)
+    String password = Encryptor.decrypt(encryptedPassword); // Implement this
+
+    // Instantiate page objects (replace with your implementations)
+    LoginPage loginPage = new LoginPage(page);
+    Navbar navbar = new Navbar(page);
+    Logout logout = new Logout(page);
+    Sidebar sidebar = new Sidebar(page);
+
+    loginPage.launchApp();
+    page.waitForTimeout(5000);
+    loginPage.verifyPage();
+
+    // Continue with your sidebar tests...
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
 SET SERVEROUTPUT ON SIZE UNLIMITED
 DECLARE
   v_sql    VARCHAR2(1000);

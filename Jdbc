@@ -1,3 +1,71 @@
+import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
+
+public class DBUtils {
+
+    private static final String DB_URL = "jdbc:oracle:thin:@localhost:1521:xe"; // Update this
+    private static final String DB_USER = "your_username";
+    private static final String DB_PASSWORD = "your_password";
+
+    public static Map<String, String> runQuery(String sql) throws SQLException, ClassNotFoundException {
+        Class.forName("oracle.jdbc.OracleDriver");
+        Map<String, String> result = new HashMap<>();
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            ResultSetMetaData metaData = rs.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            if (rs.next()) {
+                for (int i = 1; i <= columnCount; i++) {
+                    result.put(metaData.getColumnName(i), rs.getString(i));
+                }
+            }
+        }
+        return result;
+    }
+}
+
+
+
+
+
+import com.microsoft.playwright.*;
+import org.junit.jupiter.api.Test;
+
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class MyPlaywrightTest {
+    @Test
+    public void testUIAndDBValidation() throws Exception {
+        try (Playwright playwright = Playwright.create()) {
+            Browser browser = playwright.chromium().launch();
+            Page page = browser.newPage();
+
+            page.navigate("http://your-app-url.com");
+
+            String uiValue = page.locator("#someElement").textContent().trim();
+
+            String sql = "SELECT full_name FROM users WHERE user_id = '123'";
+            Map<String, String> dbResult = DBUtils.runQuery(sql);
+            String dbValue = dbResult.get("FULL_NAME").trim();
+
+            assertEquals(dbValue, uiValue, "UI and DB values do not match");
+        }
+    }
+}
+
+
+
+
+
+
+
 import com.microsoft.playwright.*;
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 

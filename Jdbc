@@ -1,3 +1,51 @@
+import java.util.Map;
+import java.util.Set;
+
+public class DataComparer {
+
+    public static void compareUiAndDb(Map<String, String> uiJson, Map<String, String> dbResult, Map<String, String> keyMapping) {
+        System.out.println("Comparing UI and DB values:");
+
+        for (Map.Entry<String, String> entry : keyMapping.entrySet()) {
+            String uiKey = entry.getKey();
+            String dbKey = entry.getValue();
+
+            String uiValue = uiJson.getOrDefault(uiKey, "").trim();
+            String dbValue = dbResult.getOrDefault(dbKey, "").trim();
+
+            if (uiValue.equalsIgnoreCase(dbValue)) {
+                System.out.println("✅ Match: UI [" + uiKey + "] = '" + uiValue + "' matches DB [" + dbKey + "] = '" + dbValue + "'");
+            } else {
+                System.out.println("❌ Mismatch: UI [" + uiKey + "] = '" + uiValue + "' vs DB [" + dbKey + "] = '" + dbValue + "'");
+            }
+        }
+    }
+}
+
+
+Map<String, String> uiJson = Map.of(
+    "userName", "John Doe",
+    "userEmail", "john@example.com"
+);
+
+Map<String, String> dbResult = Map.of(
+    "FULL_NAME", "John Doe",
+    "EMAIL_ID", "john@example.com"
+);
+
+// Mapping between UI keys and DB keys
+Map<String, String> keyMapping = Map.of(
+    "userName", "FULL_NAME",
+    "userEmail", "EMAIL_ID"
+);
+
+// Compare
+DataComparer.compareUiAndDb(uiJson, dbResult, keyMapping);
+
+
+
+
+
 
 import java.sql.*;
 import java.util.HashMap;

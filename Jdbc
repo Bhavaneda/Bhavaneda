@@ -1,4 +1,40 @@
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+
+public class DataComparer {
+
+    public static void compareUiAndDb(Map<String, String> uiJson, Map<String, String> dbResult, Map<String, String> keyMapping) {
+        List<String> mismatches = new ArrayList<>();
+        System.out.println("Comparing UI and DB values:");
+
+        for (Map.Entry<String, String> entry : keyMapping.entrySet()) {
+            String uiKey = entry.getKey();
+            String dbKey = entry.getValue();
+
+            String uiValue = uiJson.getOrDefault(uiKey, "").trim();
+            String dbValue = dbResult.getOrDefault(dbKey, "").trim();
+
+            if (uiValue.equalsIgnoreCase(dbValue)) {
+                System.out.println("✅ Match: UI [" + uiKey + "] = '" + uiValue + "' matches DB [" + dbKey + "] = '" + dbValue + "'");
+            } else {
+                String errorMsg = "❌ Mismatch: UI [" + uiKey + "] = '" + uiValue + "' vs DB [" + dbKey + "] = '" + dbValue + "'";
+                mismatches.add(errorMsg);
+                System.out.println(errorMsg);
+            }
+        }
+
+        if (!mismatches.isEmpty()) {
+            throw new AssertionError("Test failed due to the following mismatches:\n" + String.join("\n", mismatches));
+        }
+    }
+}
+
+
+
+
+
+import java.util.Map;
 import java.util.Set;
 
 public class DataComparer {
